@@ -16,16 +16,11 @@ public class Client {
 	public static Socket socket;
 	public static Comfy comfy = null;
 
-	public static void main (String[] args) {
-		try {
-			initConnection();
-			initComfy();
-			waitForMessage();
-			waitForKeyboardInput();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Server has no responses.");
-		}
+	public static void main (String[] args) throws IOException, JSONException {
+        initConnection();
+        initComfy();
+        waitForMessage();
+        waitForKeyboardInput();
 	}
 
 	private static void waitForMessage() {
@@ -39,12 +34,8 @@ public class Client {
 	}
 
 	public static void initConnection() throws IOException {
-		try {
-            socket = new Socket(Configuration.HOST, Configuration.PORT);
-            socket.setSoTimeout(10000);
-		} catch (IOException e) {
-			throw e;
-		}
+		socket = new Socket(Configuration.HOST, Configuration.PORT);
+		socket.setSoTimeout(10000);
 	}
 
 	private static void initComfy() throws IOException {
@@ -54,20 +45,16 @@ public class Client {
 	public static void waitForKeyboardInput() throws IOException, JSONException {
 		BufferedReader keyboardInput = new BufferedReader(new InputStreamReader(System.in));
 		while(true) {
-			try {
-                String str = keyboardInput.readLine();
-                if (str.equals("fuck")) {
-                	System.out.println("Kill");
-                	socket.close();
-                	return;
-                } else {
-                	JSONObject toSend = new JSONObject();
-                	toSend.put("content", str);
-                	comfy.send("message", toSend);
-                }
-			} catch(IOException e) {
-                System.out.println(e);
-			}
+			String str = keyboardInput.readLine();
+            if (str.equals("fuck")) {
+            	System.out.println("Kill");
+                socket.close();
+                return;
+            } else {
+            	JSONObject toSend = new JSONObject();
+            	toSend.put("content", str);
+                comfy.send("message", toSend);
+            }
 		}
 	}
 }
