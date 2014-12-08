@@ -3,27 +3,39 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Common.src.Action;
+import Common.src.Comfy;
 import Common.src.Configuration;
 
 public class Client {
 	public static Socket socket;
+	public static Comfy comfy = null;
 
 	public static void main (String[] args) {
 		try {
 			initConnection();
-			System.out.println("Connection OK.");
-			waitForSocketInput();
+			initComfy();
+			waitForMessage();
 			waitForKeyboardInput();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Server has no responses.");
 		}
+	}
+
+	private static void waitForMessage() {
+		comfy.accept("message", new Action() {
+			@Override
+			public void run() {
+				super.run();
+				System.out.println("Data From Server: " + data);
+			}
+		});
 	}
 
 	public static void initConnection() throws IOException {
@@ -35,26 +47,23 @@ public class Client {
 		}
 	}
 
-	public static void waitForSocketInput() throws IOException {
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			Thread socketInputThread = new Thread(new Receiver(in));
-			socketInputThread.start();
+	private static void initComfy() throws IOException {
+		comfy = new Comfy(socket);
 	}
 
 	public static void waitForKeyboardInput() throws IOException, JSONException {
 		BufferedReader keyboardInput = new BufferedReader(new InputStreamReader(System.in));
-		PrintStream out = new PrintStream(socket.getOutputStream());
 		while(true) {
 			try {
                 String str = keyboardInput.readLine();
-                System.out.println(str);
                 if (str.equals("fuck")) {
-                	System.out.println("Good");
+                	System.out.println("Kill");
+                	socket.close();
                 	return;
                 } else {
                 	JSONObject toSend = new JSONObject();
                 	toSend.put("content", str);
-                	out.println(toSend.toString());
+                	comfy.send("message", toSend);
                 }
 			} catch(IOException e) {
                 System.out.println(e);
