@@ -17,7 +17,7 @@ public class MessageAction extends Action {
 	public void run() {
 		super.run();
 		try {
-			Logger.log("[" + data.get("to") + "]" + " said: " + data.get("content"));
+			Logger.log("[" + data.get("from") + "]" + " said: " + data.get("content"));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
