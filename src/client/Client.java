@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.Actions.EnterGroupSuccessedAction;
+import client.Actions.ErrorAction;
 import client.Actions.LoginSuccessedAction;
 import client.Actions.MessageAction;
 import client.Actions.RefuseLoginAction;
@@ -46,6 +47,7 @@ public class Client {
 
 	private static void initActions() {
 		comfy.accept("message", new MessageAction());
+		comfy.accept("error", new ErrorAction());
 		comfy.accept("users list", new UserListAction());
 		comfy.accept("login successed", new LoginSuccessedAction());
 		comfy.accept("refuse login", new RefuseLoginAction());
