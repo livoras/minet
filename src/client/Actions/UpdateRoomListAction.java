@@ -6,16 +6,15 @@ import client.Client;
 import Common.src.Action;
 import Common.src.Logger;
 
-public class UserListAction extends Action {
-
+public class UpdateRoomListAction extends Action {
 	@Override
 	public void run() {
 		super.run();
 		try {
-			Client.users = data.getJSONArray("users");
-			Logger.log("User list is " + data.getJSONArray("users"));
+			Client.allRooms = data.getJSONArray("rooms");
+			Logger.log("Rooms Updated: " + Client.allRooms);
 		} catch (JSONException e) {
 			e.printStackTrace();
-		};
+		}
 	}
 }
