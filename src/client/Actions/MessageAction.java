@@ -1,7 +1,11 @@
 package client.Actions;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 
+import client.Client;
+import client.UI;
 import Common.src.Action;
 import Common.src.Logger;
 
@@ -20,9 +24,39 @@ public class MessageAction extends Action {
 
 	private void showGroupChat() throws JSONException {
 		Logger.log("[group:" + data.get("to") + " - " + data.get("from") + "]" + " said: " + data.get("content"));
+		String roomName = data.getString("to");
+        String content = data.getString("content");
+		ArrayList<String> records = Client.roomChatRecords.get(roomName);
+		content = data.getString("from") + " : " + content;
+		if (records == null) {
+		    ArrayList<String> newRecords = new ArrayList<String>();
+		    newRecords.add(content);
+		    Client.roomChatRecords.put(roomName, newRecords);
+		} else {
+		    records.add(content);
+		}
+		if (Client.currentChatType == Client.GROUP) updateIfShow(roomName);
 	}
 
-	private void showP2PChat() throws JSONException {
+    private void showP2PChat() throws JSONException {
 		Logger.log("[p2p:" + data.get("from") + "]" + " said: " + data.get("content"));
+		String userName = data.getString("from");
+        String content = userName + " : " + data.getString("content");
+		ArrayList<String> records = Client.userChatRecords.get(userName);
+		if (records == null) {
+		    ArrayList<String> newRecords = new ArrayList<String>();
+		    newRecords.add(content);
+		    Client.userChatRecords.put(userName, newRecords);
+		} else {
+		    records.add(content);
+		}
+		if (Client.currentChatType == Client.USER) updateIfShow(userName);
 	}
+
+	private void updateIfShow(String name) {
+	    if (name.equals(Client.currentTargetName)) {
+	        UI.updateRecordListHeight();
+	    } 
+    }
+
 }

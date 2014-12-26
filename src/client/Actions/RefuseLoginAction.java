@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.json.JSONException;
 
-import client.Client;
+import client.UI;
 import Common.src.Action;
 import Common.src.Logger;
 
@@ -15,7 +15,7 @@ public class RefuseLoginAction extends Action {
 		super.run();
 		Logger.log(data);
 		try {
-			Client.login();
+			UI.login();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} 
