@@ -1,6 +1,12 @@
 package client;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 
 import javax.swing.JFrame;
 
@@ -64,6 +70,7 @@ public class UI {
 	public static UIUserModel userListModel = new UIUserModel();
 	public static UIRoomModel roomListModel = new UIRoomModel();
 	public static UIRecordModel recordModel = new UIRecordModel();
+    public static JTextArea text_input = new JTextArea();
 
     public static void main(String[] args) throws IOException, JSONException {
         Thread connectionThread = new Thread(new Connetction());
@@ -74,7 +81,7 @@ public class UI {
     public static void login() throws IOException, JSONException {
         String name = null;
         while(name == null) {
-            name = JOptionPane.showInputDialog("请输入你的用户名："); 
+            name = JOptionPane.showInputDialog("请输入你的用户名：" + System.getProperty("file.encoding")); 
             Client.login(name);
         }
     }
@@ -120,7 +127,6 @@ public class UI {
 
         private void initSendTextArea() {
             // 输入文本框
-            JTextArea text_input = new JTextArea();
             text_input.setSelectedTextColor(new Color(255, 255, 255));
             text_input.setSelectionColor(new Color(100, 149, 237));
             text_input.setTabSize(4);
@@ -148,23 +154,30 @@ public class UI {
                 
                 @Override
                 public void keyPressed(KeyEvent e) {
-                    String content = text_input.getText();
                     if (e.getKeyCode() == 10) {
+                        getContentAndSend();
                         isEnter = true;
-                        if (content.length() == 0) return;
-                        sendContent(content);
                     }
                 }
+
             });
 
-            // 发送按钮
-            JButton button_send = new JButton("\u53D1\u9001");
-            button_send.setIcon(new ImageIcon("icon\\send.png"));
+            JButton button_send = new JButton("发射！");
+            button_send.setIcon(new ImageIcon(getClass().getResource("/send.png")));
             button_send.setBackground(new Color(147, 112, 219));
             button_send.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+            splitPane_6.setRightComponent(button_send);
+            button_send.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getContentAndSend();
+                    text_input.setText("");
+                }
+            });
         }
 
         protected void sendContent(String content) {
+            content = decompose(content);
             try {
                 if (Client.currentChatType == Client.USER) {
                     Client.p2pChat(content);
@@ -182,7 +195,7 @@ public class UI {
             chat.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(255, 0, 0)));
             chat.setForeground(new Color(0, 0, 0));
             chat.setOpaque(true);
-            chat.setIcon(new ImageIcon("icon//chat.png"));
+            chat.setIcon(new ImageIcon(getClass().getResource("/chat.png")));
             chat.setBackground(new Color(230, 230, 250));
             chat.setHorizontalAlignment(SwingConstants.CENTER);
             chat.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
@@ -213,7 +226,7 @@ public class UI {
             Minet.getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
             Minet.getContentPane().add(splitPane);
             Minet.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 13));
-            Minet.setIconImage(Toolkit.getDefaultToolkit().getImage("icon\\logo.jpg"));
+            Minet.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.jpg"));
 
             Minet.setResizable(false);
             Minet.setTitle("Minet : " + Client.username);
@@ -263,7 +276,7 @@ public class UI {
             JLabel UsrLabel = new JLabel("在线用户");
             UsrLabel.setDisplayedMnemonic(KeyEvent.VK_CONTROL);
             UsrLabel.setOpaque(true);
-            UsrLabel.setIcon(new ImageIcon("icon\\usr.png"));
+            UsrLabel.setIcon(new ImageIcon(getClass().getResource("/usr.png")));
             UsrLabel.setBackground(new Color(173, 216, 230));
             UsrLabel.setForeground(new Color(0, 0, 0));
             UsrLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -320,11 +333,17 @@ public class UI {
             updateRecordListHeight();
         }
 
+        private void getContentAndSend() {
+            String content = text_input.getText();
+            if (content.length() == 0) return;
+            sendContent(content);
+        }
+
         private void initRoomList() {
             // 聊天室列表标题
-            JLabel GroupLabel = new JLabel("群组列表");
+            JLabel GroupLabel = new JLabel(decompose("群组列表"));
             GroupLabel.setOpaque(true);
-            GroupLabel.setIcon(new ImageIcon("icon\\group.png"));
+            GroupLabel.setIcon(new ImageIcon(getClass().getResource("/group.png")));
             GroupLabel.setForeground(new Color(0, 0, 0));
             GroupLabel.setDisplayedMnemonic(KeyEvent.VK_CONTROL);
             GroupLabel.setBackground(new Color(173, 216, 230));
@@ -354,7 +373,7 @@ public class UI {
                     }	
                 }
             });
-            button_new.setIcon(new ImageIcon("icon//new.png"));
+            button_new.setIcon(new ImageIcon(getClass().getResource("/new.png")));
             button_new.setForeground(new Color(0, 0, 0));
             button_new.setBackground(new Color(255, 255, 255));
             button_new.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 13));
@@ -421,4 +440,11 @@ public class UI {
             }
         });
     }
+
+	public static String decompose(String s) { 
+//	    String normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
+//	    String accentsgone = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+//	    return accentsgone;
+	    return s;
+	}
 }

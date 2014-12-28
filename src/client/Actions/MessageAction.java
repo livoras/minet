@@ -1,5 +1,6 @@
 package client.Actions;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -10,6 +11,7 @@ import Common.src.Action;
 import Common.src.Logger;
 
 public class MessageAction extends Action {
+    public final String ENCODE = System.getProperty("file.encoding");
 
 	@Override
 	public void run() {
@@ -42,6 +44,11 @@ public class MessageAction extends Action {
 		Logger.log("[p2p:" + data.get("from") + "]" + " said: " + data.get("content"));
 		String userName = data.getString("from");
         String content = userName + " : " + data.getString("content");
+        try {
+            content = new String(content.getBytes(), ENCODE);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 		ArrayList<String> records = Client.userChatRecords.get(userName);
 		if (records == null) {
 		    ArrayList<String> newRecords = new ArrayList<String>();
