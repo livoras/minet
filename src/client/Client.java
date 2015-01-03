@@ -50,7 +50,8 @@ public class Client {
 	}
 
 	public static void initConnection() throws IOException {
-		socket = new Socket(Configuration.HOST, Configuration.PORT);
+	    Configuration config = new Configuration();
+		socket = new Socket(config.HOST, config.PORT);
 		socket.setSoTimeout(10000);
 	}
 

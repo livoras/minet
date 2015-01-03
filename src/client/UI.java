@@ -7,6 +7,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 
@@ -81,7 +82,7 @@ public class UI {
     public static void login() throws IOException, JSONException {
         String name = null;
         while(name == null) {
-            name = JOptionPane.showInputDialog("请输入你的用户名：" + System.getProperty("file.encoding")); 
+            name = JOptionPane.showInputDialog("请输入你的用户名："); 
             Client.login(name);
         }
     }
@@ -177,7 +178,6 @@ public class UI {
         }
 
         protected void sendContent(String content) {
-            content = decompose(content);
             try {
                 if (Client.currentChatType == Client.USER) {
                     Client.p2pChat(content);
@@ -341,7 +341,7 @@ public class UI {
 
         private void initRoomList() {
             // 聊天室列表标题
-            JLabel GroupLabel = new JLabel(decompose("群组列表"));
+            JLabel GroupLabel = new JLabel("群组列表");
             GroupLabel.setOpaque(true);
             GroupLabel.setIcon(new ImageIcon(getClass().getResource("/group.png")));
             GroupLabel.setForeground(new Color(0, 0, 0));
@@ -441,10 +441,4 @@ public class UI {
         });
     }
 
-	public static String decompose(String s) { 
-//	    String normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
-//	    String accentsgone = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-//	    return accentsgone;
-	    return s;
-	}
 }
